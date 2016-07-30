@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ff009688"
+    tools:context="com.stefandimic.dbapplication.fragments.TextFragment">
+
+    <TextView
+        android:id="@+id/textBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="@string/from_db" />
+
+    <TextView
+        android:id="@+id/listBox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:padding="2dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/border"/>
+</LinearLayout>
