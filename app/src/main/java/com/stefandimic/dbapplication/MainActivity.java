@@ -2,13 +2,12 @@ package com.stefandimic.dbapplication;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.stefandimic.dbapplication.database.InputContract;
-import com.stefandimic.dbapplication.database.TextDbHelper;
 import com.stefandimic.dbapplication.fragments.InputFragment;
 import com.stefandimic.dbapplication.fragments.TextFragment;
 
@@ -16,35 +15,31 @@ public class MainActivity extends AppCompatActivity implements InputFragment.Cal
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private SQLiteDatabase mDatabase;
-    private TextDbHelper mDbHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mDbHelper = new TextDbHelper(this);
-        mDatabase = mDbHelper.getWritableDatabase();
-        new QueryTextsTask().execute();
+        new QueryTextsTask(InputContract.Texts.CONTENT_URI).execute();
     }
 
     @Override
     public void onOkPressed(String text) {
         ContentValues cv = new ContentValues();
         cv.put(InputContract.Texts.TEXT, text);
-        mDatabase.insert(InputContract.Texts.TABLE_NAME, null, cv);
-        new QueryTextsTask().execute();
+        getContentResolver().insert(InputContract.Texts.CONTENT_URI, cv);
+        new QueryTextsTask(InputContract.Texts.CONTENT_URI).execute();
     }
 
     private class QueryTextsTask extends AsyncTask<Void, Void, Cursor> {
+        private Uri mUri;
 
-        public QueryTextsTask() {}
+        public QueryTextsTask(Uri uri) {
+            mUri = uri;
+        }
 
         @Override
         protected Cursor doInBackground(Void... voids) {
-            return mDatabase.query(InputContract.Texts.TABLE_NAME,
-                    null, null, null, null, null, null);
+            return getContentResolver().query(mUri, null, null, null, null);
         }
 
         @Override

@@ -2,19 +2,31 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.stefandimic.dbapplication">
 
+    <permission android:name="com.stefandimic.provider.text.read"
+        android:protectionLevel="normal" />
+    <permission android:name="com.stefandimic.provider.text.write"
+        android:protectionLevel="normal" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.stefandimic.provider.texts"
+            android:name=".provider.TextsProvider"
+            android:exported="true"
+            android:readPermission="com.stefandimic.provider.text.read"
+            android:writePermission="com.stefandimic.provider.text.write"/>
     </application>
 
 </manifest>

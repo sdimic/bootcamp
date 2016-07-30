@@ -1,6 +1,5 @@
 package com.stefandimic.dbapplication.fragments;
 
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,11 +9,6 @@ import android.widget.TextView;
 
 import com.stefandimic.dbapplication.R;
 
-import java.util.List;
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class TextFragment extends Fragment {
 
     public TextFragment() {}
