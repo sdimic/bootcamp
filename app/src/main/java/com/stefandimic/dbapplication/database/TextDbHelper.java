@@ -7,6 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.provider.BaseColumns;
 
 public class TextDbHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME = "bootcamp.db";
@@ -23,19 +24,25 @@ public class TextDbHelper extends SQLiteOpenHelper{
 
     private void createInputTable(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + InputContract.Texts.TABLE_NAME + " ("
-                + InputContract.Texts._ID + "INTEGER PRIMARY KEY, "
+                + InputContract.Texts._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + InputContract.Texts.TEXT + " TEXT)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {}
 
-    public Cursor getTexts(String[] projection,
+    public Cursor getTexts(String id,
+                           String[] projection,
                            String selection,
                            String[] selectionArgs,
                            String sortOrder) {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables(InputContract.Texts.TABLE_NAME);
+
+        if(id != null) {
+            builder.appendWhere(BaseColumns._ID + "=" + id);
+        }
+
         return builder.query(getReadableDatabase(), projection, selection, selectionArgs,
                 null, null, sortOrder);
     }
@@ -50,11 +57,21 @@ public class TextDbHelper extends SQLiteOpenHelper{
         return id;
     }
 
-    public int deleteTexts() {
-        return getWritableDatabase().delete(InputContract.Texts.TABLE_NAME, null, null);
+    public int deleteTexts(String id) {
+        if(id == null) {
+            return getWritableDatabase().delete(InputContract.Texts.TABLE_NAME, null, null);
+        } else {
+            return getWritableDatabase().delete(InputContract.Texts.TABLE_NAME, "_id=?",
+                    new String[] {id});
+        }
     }
 
-    public int updateTexts(ContentValues cv) {
-        return getWritableDatabase().update(InputContract.Texts.TABLE_NAME, cv, null, null);
+    public int updateTexts(String id, ContentValues cv) {
+        if(id == null) {
+            return getWritableDatabase().update(InputContract.Texts.TABLE_NAME, cv, null, null);
+        } else {
+            return getWritableDatabase().update(InputContract.Texts.TABLE_NAME, cv, "_id=?",
+                    new String[] {id});
+        }
     }
 }

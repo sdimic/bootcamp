@@ -12,8 +12,9 @@ import com.stefandimic.dbapplication.database.InputContract;
 import com.stefandimic.dbapplication.database.TextDbHelper;
 
 public class TextsProvider extends ContentProvider{
-    public static final int TEXTS = 1;
-    public static final String AUTHORITY = "com.stefandimic.provider.texts";
+    public static final int ALL_TEXTS = 1;
+    public static final int SINGLE_TEXT = 2;
+    public static final String AUTHORITY = "com.stefandimic.provider";
     public static final UriMatcher sUriMatcher = getUriMatcher();
 
     private TextDbHelper mDbHelper;
@@ -24,22 +25,45 @@ public class TextsProvider extends ContentProvider{
         return true;
     }
 
-    @Nullable
-    @Override
-    public Cursor query(Uri uri, String[] projection,
-                        String selection, String[] selectionArgs, String sortOrder) {
-        if(sUriMatcher.match(uri) == TEXTS) {
-            return mDbHelper.getTexts(projection, selection, selectionArgs, sortOrder);
-        }
-
-        return null;
+    private static UriMatcher getUriMatcher() {
+        UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI(AUTHORITY, InputContract.Texts.TABLE_NAME, ALL_TEXTS);
+        matcher.addURI(AUTHORITY, InputContract.Texts.TABLE_NAME + "/#", SINGLE_TEXT);
+        return matcher;
     }
 
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+        switch (sUriMatcher.match(uri)) {
+            case ALL_TEXTS:
+                return "vnd.android.cursor.dir/vnd." + AUTHORITY + "."
+                        + InputContract.Texts.TABLE_NAME;
+            case SINGLE_TEXT:
+                return "vnd.android.cursor.item/vnd." + AUTHORITY + "."
+                        + InputContract.Texts.TABLE_NAME;
+            default:
+                throw new IllegalArgumentException("Unsupported Uri: " + uri);
+        }
     }
+
+    @Nullable
+    @Override
+    public Cursor query(Uri uri, String[] projection,
+                        String selection, String[] selectionArgs, String sortOrder) {
+        String id = null;
+        switch (sUriMatcher.match(uri)) {
+            case ALL_TEXTS:
+                //do nothing
+                break;
+            case SINGLE_TEXT:
+                id = uri.getLastPathSegment();
+                break;
+        }
+
+        return mDbHelper.getTexts(id, projection, selection, selectionArgs, sortOrder);
+    }
+
 
     @Nullable
     @Override
@@ -49,18 +73,31 @@ public class TextsProvider extends ContentProvider{
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return mDbHelper.deleteTexts();
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        String id = null;
+        switch (sUriMatcher.match(uri)) {
+            case ALL_TEXTS:
+                //do nothing
+                break;
+            case SINGLE_TEXT:
+                id = uri.getLastPathSegment();
+                break;
+
+        }
+        return mDbHelper.deleteTexts(id);
     }
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return mDbHelper.updateTexts(contentValues);
-    }
-
-    private static UriMatcher getUriMatcher() {
-        UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        matcher.addURI(AUTHORITY, InputContract.Texts.TABLE_NAME, TEXTS);
-        return matcher;
+        String id = null;
+        switch (sUriMatcher.match(uri)) {
+            case ALL_TEXTS:
+                //do nothing
+                break;
+            case SINGLE_TEXT:
+                id = uri.getLastPathSegment();
+                break;
+        }
+        return mDbHelper.updateTexts(id, contentValues);
     }
 }

@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.stefandimic.dbapplication">
 
-    <permission android:name="com.stefandimic.provider.text.read"
+    <permission android:name="com.stefandimic.provider.read"
         android:protectionLevel="normal" />
-    <permission android:name="com.stefandimic.provider.text.write"
+    <permission android:name="com.stefandimic.provider.write"
         android:protectionLevel="normal" />
 
     <application
@@ -22,11 +22,11 @@
             </intent-filter>
         </activity>
         <provider
-            android:authorities="com.stefandimic.provider.texts"
+            android:authorities="com.stefandimic.provider"
             android:name=".provider.TextsProvider"
             android:exported="true"
-            android:readPermission="com.stefandimic.provider.text.read"
-            android:writePermission="com.stefandimic.provider.text.write"/>
+            android:readPermission="com.stefandimic.provider.read"
+            android:writePermission="com.stefandimic.provider.write"/>
     </application>
 
 </manifest>
