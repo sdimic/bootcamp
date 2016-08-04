@@ -1,9 +1,10 @@
 package com.stefandimic.dbapplication;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -11,7 +12,8 @@ import com.stefandimic.dbapplication.database.InputContract;
 import com.stefandimic.dbapplication.fragments.InputFragment;
 import com.stefandimic.dbapplication.fragments.TextFragment;
 
-public class MainActivity extends AppCompatActivity implements InputFragment.Callback{
+public class MainActivity extends AppCompatActivity
+        implements InputFragment.Callback, LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -19,7 +21,13 @@ public class MainActivity extends AppCompatActivity implements InputFragment.Cal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new QueryTextsTask(InputContract.Texts.CONTENT_URI).execute();
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
@@ -27,39 +35,39 @@ public class MainActivity extends AppCompatActivity implements InputFragment.Cal
         ContentValues cv = new ContentValues();
         cv.put(InputContract.Texts.TEXT, text);
         getContentResolver().insert(InputContract.Texts.CONTENT_URI, cv);
-        new QueryTextsTask(InputContract.Texts.CONTENT_URI).execute();
+        getLoaderManager().restartLoader(0, null, this);
     }
 
-    private class QueryTextsTask extends AsyncTask<Void, Void, Cursor> {
-        private Uri mUri;
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(this, InputContract.Texts.CONTENT_URI, null, null, null, null);
+    }
 
-        public QueryTextsTask(Uri uri) {
-            mUri = uri;
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        parse(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    private void parse(Cursor cursor) {
+        if(cursor == null || cursor.getCount() < 1) {
+            return;
         }
 
-        @Override
-        protected Cursor doInBackground(Void... voids) {
-            return getContentResolver().query(mUri, null, null, null, null);
+        StringBuilder builder = new StringBuilder();
+
+        while(cursor.moveToNext()) {
+            String text = cursor.getString(cursor.getColumnIndex(InputContract.Texts.TEXT));
+            builder.append(text);
+            builder.append("\n\n");
         }
 
-        @Override
-        protected void onPostExecute(Cursor cursor) {
-            if(cursor.getCount() < 1) {
-                return;
-            }
-
-            StringBuilder builder = new StringBuilder();
-
-            while(cursor.moveToNext()) {
-                String text = cursor.getString(cursor.getColumnIndex(InputContract.Texts.TEXT));
-                builder.append(text);
-                builder.append("\n\n");
-            }
-
-            cursor.close();
-
-            updateListBox(builder.toString());
-        }
+        cursor.close();
+        updateListBox(builder.toString());
     }
 
     private void updateListBox(String texts) {
