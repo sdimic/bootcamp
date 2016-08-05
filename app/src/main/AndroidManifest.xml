@@ -3,6 +3,7 @@
     package="com.stefandimic.contentresolverdemo">
 
     <uses-permission android:name="com.stefandimic.provider.read" />
+    <uses-permission android:name="com.stefandimic.provider.write" />
 
     <application
         android:allowBackup="true"

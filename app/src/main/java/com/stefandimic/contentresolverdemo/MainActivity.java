@@ -1,31 +1,44 @@
 package com.stefandimic.contentresolverdemo;
 
-import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+import com.stefandimic.contentresolverdemo.fragment.AddTextDialogFragment;
+
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+        View.OnClickListener,
+        AddTextDialogFragment.Callback {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final String EXTRA_ID = "id";
 
     private MyAdapter mAdapter;
+    private ListView mList;
+    private FloatingActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAdapter = new MyAdapter(this, null);
-
-        ListView mList = (ListView) findViewById(android.R.id.list);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(this);
+        mList = (ListView) findViewById(R.id.list);
         mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -37,7 +50,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
             }
         });
 
-        setListAdapter(mAdapter);
+        mList.setAdapter(mAdapter);
         getLoaderManager().initLoader(ContentUtil.URL_LOADER_ALL, null, this);
     }
 
@@ -60,5 +73,41 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader loader) {
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                displayNewTextFragment();
+                break;
+        }
+    }
+
+    private void displayNewTextFragment() {
+        AddTextDialogFragment.newInstance().show(getSupportFragmentManager(),
+                AddTextDialogFragment.TAG);
+    }
+
+    @Override
+    public void insertText(String text) {
+        Log.d(TAG, "insertText: " + text);
+        ContentValues cv = new ContentValues();
+        cv.put("text", text);
+        new MyQueryHandler(getContentResolver()).startInsert(0, null,
+                ContentUtil.CONTENT_URI_SPECIFIC, cv);
+    }
+
+    private class MyQueryHandler extends AsyncQueryHandler {
+        public MyQueryHandler(ContentResolver cr) {
+            super(cr);
+        }
+
+        @Override
+        protected void onInsertComplete(int token, Object cookie, Uri uri) {
+            Log.d(TAG, "onInsertComplete: uri = " + uri);
+            MainActivity.this.getLoaderManager().restartLoader(ContentUtil.URL_LOADER_ALL,
+                    null, MainActivity.this);
+        }
     }
 }
