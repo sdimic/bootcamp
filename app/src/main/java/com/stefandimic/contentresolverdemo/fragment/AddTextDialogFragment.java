@@ -3,13 +3,13 @@ package com.stefandimic.contentresolverdemo.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.stefandimic.contentresolverdemo.R;
@@ -22,6 +22,14 @@ public class AddTextDialogFragment extends DialogFragment implements View.OnClic
 
     public static AddTextDialogFragment newInstance() {
         return new AddTextDialogFragment();
+    }
+
+    public static AddTextDialogFragment newInstance(String text) {
+        AddTextDialogFragment frag = new AddTextDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("text", text);
+        frag.setArguments(bundle);
+        return frag;
     }
 
     public interface Callback {
@@ -49,11 +57,18 @@ public class AddTextDialogFragment extends DialogFragment implements View.OnClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.add_text_fragment, container, false);
-        mText = (EditText) v.findViewById(R.id.editText_title);
+        mText = (EditText) v.findViewById(R.id.editText);
         Button ok = (Button) v.findViewById(R.id.button_ok);
         Button cancel = (Button) v.findViewById(R.id.button_cancel);
         ok.setOnClickListener(this);
         cancel.setOnClickListener(this);
+
+        if(getArguments() != null) { //edit mode
+            String text = getArguments().getString("text", null);
+            mText.setText(text);
+            TextView title = (TextView) v.findViewById(R.id.input_title);
+            title.setText(R.string.edit_text);
+        }
         return v;
     }
 

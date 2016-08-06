@@ -8,7 +8,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:paddingLeft="8dp"
-        android:paddingStart="8dp"/>
+        android:paddingStart="8dp"
+        android:transcriptMode="alwaysScroll"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -17,7 +18,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@mipmap/ic_add_white_24dp"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"/>

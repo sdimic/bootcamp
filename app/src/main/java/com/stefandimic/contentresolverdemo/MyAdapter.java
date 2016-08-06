@@ -17,10 +17,8 @@ public class MyAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View v = LayoutInflater.from(context)
-                .inflate(android.R.layout.two_line_list_item, parent, false);
-        v.setTag(cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
-        return v;
+        return  LayoutInflater.from(context).inflate(android.R.layout.two_line_list_item,
+                parent, false);
     }
 
     @Override
@@ -29,5 +27,6 @@ public class MyAdapter extends CursorAdapter {
         TextView text = (TextView) view.findViewById(android.R.id.text2);
         id.setText(cursor.getString(cursor.getColumnIndex("_id")));
         text.setText(cursor.getString(cursor.getColumnIndex("text")));
+        view.setTag(cursor.getLong(cursor.getColumnIndex(BaseColumns._ID)));
     }
 }

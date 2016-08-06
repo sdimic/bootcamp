@@ -12,13 +12,14 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/input_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/new_text" />
 
             <EditText
                 android:inputType="textMultiLine"
-                android:id="@+id/editText_title"
+                android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="vertical"/>

@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final String EXTRA_ID = "id";
+    private static final int TOKEN = 1337;
 
     private MyAdapter mAdapter;
     private ListView mList;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity
         mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                int id = (Integer) view.getTag();
+                long id = (Long) view.getTag();
                 Log.d(TAG, "onItemClick: item tag = " + id);
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 intent.putExtra(EXTRA_ID, id);
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "insertText: " + text);
         ContentValues cv = new ContentValues();
         cv.put("text", text);
-        new MyQueryHandler(getContentResolver()).startInsert(0, null,
+        new MyQueryHandler(getContentResolver()).startInsert(TOKEN, null,
                 ContentUtil.CONTENT_URI_SPECIFIC, cv);
     }
 
